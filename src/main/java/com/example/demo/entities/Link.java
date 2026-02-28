@@ -59,4 +59,47 @@ public class Link {
     public void setExpires(LocalDateTime expires) {
         this.expires = expires;
     }
+
+    public static class Builder {
+        private Long id;
+        private String code;
+        private String originalURL;
+        private int clicks;
+        private LocalDateTime expires;
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder code(String code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder originalURL(String originalURL) {
+            this.originalURL = originalURL;
+            return this;
+        }
+
+        public Builder clicks(int clicks) {
+            this.clicks = clicks;
+            return this;
+        }
+
+        public Builder expires(LocalDateTime expires) {
+            this.expires = expires;
+            return this;
+        }
+
+        public Link build() {
+            Link link = new Link();
+            link.setId(id);
+            link.setCode(code);
+            link.setOriginalURL(originalURL);
+            link.setClicks(clicks);
+            link.setExpires(expires);
+            return link;
+        }
+    }
 }
