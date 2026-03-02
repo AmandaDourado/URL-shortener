@@ -3,6 +3,7 @@ package com.example.demo.services;
 import com.example.demo.dto.LinkPostDTO;
 import com.example.demo.entities.Link;
 import com.example.demo.repository.LinkRepository;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,14 @@ public class LinkService {
         return saved.getId() + " - " + saved.getCode();
     }
 
+    public String getLinkByID(Long id) {
+        Link link = repository.findById(id).orElse(null);
+        if (link == null) {
+            return "Link not found";
+        }
+        return link.getOriginalURL();
+    }
+
     private Link convertToEntity(LinkPostDTO linkDTO) {
         return new Link.Builder()
                 .code(generateCode())
@@ -31,4 +40,6 @@ public class LinkService {
     private String generateCode() {
         return UUID.randomUUID().toString().substring(0, 8).replace("-", "");
     }
+
+
 }
