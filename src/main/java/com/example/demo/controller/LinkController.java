@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.LinkDTO;
+import com.example.demo.dto.LinkPostDTO;
 import com.example.demo.services.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class LinkController {
     private LinkService linkService;
 
     @PostMapping
-    public ResponseEntity saveLink(@RequestBody LinkDTO linkDTO) {
+    public ResponseEntity saveLink(@RequestBody LinkPostDTO linkDTO) {
         return ResponseEntity.ok(linkService.save(linkDTO));
     }
 }

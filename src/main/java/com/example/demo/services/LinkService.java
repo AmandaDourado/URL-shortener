@@ -1,10 +1,12 @@
 package com.example.demo.services;
 
-import com.example.demo.dto.LinkDTO;
+import com.example.demo.dto.LinkPostDTO;
 import com.example.demo.entities.Link;
 import com.example.demo.repository.LinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class LinkService {
@@ -12,18 +14,21 @@ public class LinkService {
     @Autowired
     private LinkRepository repository;
 
-    public Long save(LinkDTO link) {
+    public String save(LinkPostDTO link) {
         Link linkToSave = convertToEntity(link);
         Link saved = repository.save(linkToSave);
-        return saved.getId();
+        return saved.getId() + " - " + saved.getCode();
     }
 
-    private Link convertToEntity(LinkDTO linkDTO) {
+    private Link convertToEntity(LinkPostDTO linkDTO) {
         return new Link.Builder()
-                .code(linkDTO.getCode())
+                .code(generateCode())
                 .originalURL(linkDTO.getOriginalURL())
-                .clicks(linkDTO.getClicks())
                 .expires(linkDTO.getExpires())
                 .build();
+    }
+
+    private String generateCode() {
+        return UUID.randomUUID().toString().substring(0, 8).replace("-", "");
     }
 }
