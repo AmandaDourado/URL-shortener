@@ -21,6 +21,10 @@ public class LinkController {
     @GetMapping(params = "id")
     public ResponseEntity getLinkByID(@RequestParam("id") Long id) {
         return ResponseEntity.ok(linkService.getLinkByID(id));
+    }
 
+    @GetMapping(params = "code")
+    public ResponseEntity getLinkByCode(@RequestParam("code") String code) {
+        return ResponseEntity.ok(linkService.getLinkByCode(code));
     }
 }
