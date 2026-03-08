@@ -41,7 +41,11 @@ public class LinkService {
         return HttpStatusCode.valueOf(404).toString();
     }
 
-        private Link convertToEntity(LinkPostDTO linkDTO) {
+    public Object getStatusByCode(String code) {
+        return repository.findByCode(code);
+    }
+
+    private Link convertToEntity(LinkPostDTO linkDTO) {
         return new Link.Builder()
                 .code(generateCode())
                 .originalURL(linkDTO.getOriginalURL())
@@ -60,7 +64,5 @@ public class LinkService {
     private boolean isExpired(LocalDateTime expires) {
         return expires.isBefore(LocalDateTime.now());
     }
-
-
 
 }

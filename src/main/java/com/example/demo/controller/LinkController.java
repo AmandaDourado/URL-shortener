@@ -27,4 +27,9 @@ public class LinkController {
     public ResponseEntity getLinkByCode(@RequestParam("code") String code) {
         return ResponseEntity.ok(linkService.getLinkByCode(code));
     }
+
+    @GetMapping(value = "/{code}/status")
+    public ResponseEntity getStatusByCode(@PathVariable(value = "code") String code) {
+        return ResponseEntity.ok(linkService.getStatusByCode(code));
+    }
 }
