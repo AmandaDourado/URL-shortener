@@ -6,6 +6,7 @@ import com.example.demo.dto.response.LinkSaveResponseDTO;
 import com.example.demo.dto.response.StatusByCodeResponseDTO;
 import com.example.demo.entities.Link;
 import com.example.demo.services.LinkService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class LinkController {
     private LinkService linkService;
 
     @PostMapping
-    public ResponseEntity<LinkSaveResponseDTO> saveLink(@RequestBody LinkPostDTO linkDTO) {
+    public ResponseEntity<LinkSaveResponseDTO> saveLink(@Valid @RequestBody LinkPostDTO linkDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(linkService.save(linkDTO));
     }
 
