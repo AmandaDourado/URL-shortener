@@ -1,10 +1,12 @@
 package com.example.demo.services;
 
 import com.example.demo.dto.LinkPostDTO;
+import com.example.demo.dto.response.LinkByIDResponseDTO;
+import com.example.demo.dto.response.LinkSaveResponseDTO;
+import com.example.demo.dto.response.StatusByCodeResponseDTO;
 import com.example.demo.entities.Link;
 import com.example.demo.repository.LinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,33 +18,27 @@ public class LinkService {
     @Autowired
     private LinkRepository repository;
 
-    public String save(LinkPostDTO link) {
+    public LinkSaveResponseDTO save(LinkPostDTO link) {
         Link linkToSave = convertToEntity(link);
         Link saved = repository.save(linkToSave);
-        return saved.getId() + " - " + saved.getCode();
+        return toLinkSaveResponse(saved);
     }
 
-    public String getLinkByID(Long id) {
+    public LinkByIDResponseDTO getLinkByID(Long id) {
         Link link = repository.findById(id).orElse(null);
         if (link == null) {
-            return HttpStatusCode.valueOf(404).toString();
+            return null;
         }
-        return link.getOriginalURL();
+        return toLinkByIDResponse(link.getOriginalURL());
     }
 
-    public String getLinkByCode(String code) {
-        Link link = repository.findByCode(code);
-        if(link != null) {
-            increaseClicks(code);
-            return isExpired(link.getExpires()) ?
-                    HttpStatusCode.valueOf(410).toString() :
-                    HttpStatusCode.valueOf(302).toString();
-        }
-        return HttpStatusCode.valueOf(404).toString();
-    }
-
-    public Object getStatusByCode(String code) {
+    public Link getLinkByCode(String code) {
         return repository.findByCode(code);
+    }
+
+    public StatusByCodeResponseDTO getStatusByCode(String code) {
+        Link link = repository.findByCode(code);
+        return link != null ? toStatusByCodeResponse(link) : null;
     }
 
     private Link convertToEntity(LinkPostDTO linkDTO) {
@@ -57,12 +53,31 @@ public class LinkService {
         return UUID.randomUUID().toString().substring(0, 8).replace("-", "");
     }
 
-    private void increaseClicks(String code) {
+    public void increaseClicks(String code) {
         repository.updateClicksByCode(code);
     }
 
-    private boolean isExpired(LocalDateTime expires) {
+    public boolean isExpired(LocalDateTime expires) {
         return expires.isBefore(LocalDateTime.now());
     }
 
+    private LinkSaveResponseDTO toLinkSaveResponse(Link link) {
+        return new LinkSaveResponseDTO(
+                link.getId(),
+                link.getCode(),
+                link.getOriginalURL(),
+                link.getExpires());
+    }
+
+    private LinkByIDResponseDTO toLinkByIDResponse(String originalURL) {
+        return new LinkByIDResponseDTO(originalURL);
+    }
+
+    private StatusByCodeResponseDTO toStatusByCodeResponse(Link link) {
+        return new StatusByCodeResponseDTO(
+                link.getClicks(),
+                link.getExpires(),
+                link.getOriginalURL()
+        );
+    }
 }
