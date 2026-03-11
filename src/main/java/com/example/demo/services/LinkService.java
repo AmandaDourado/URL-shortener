@@ -45,7 +45,7 @@ public class LinkService {
         return new Link.Builder()
                 .code(generateCode())
                 .originalURL(linkDTO.getOriginalURL())
-                .expires(linkDTO.getExpires())
+                .expires(LocalDateTime.now().plusDays(2))
                 .build();
     }
 
