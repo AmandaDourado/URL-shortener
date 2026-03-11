@@ -1,7 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.dto.LinkPostDTO;
-import com.example.demo.dto.response.LinkByIDResponseDTO;
+import com.example.demo.dto.response.LinkByIdResponseDTO;
 import com.example.demo.dto.response.LinkSaveResponseDTO;
 import com.example.demo.dto.response.StatusByCodeResponseDTO;
 import com.example.demo.entities.Link;
@@ -24,12 +24,12 @@ public class LinkService {
         return toLinkSaveResponse(saved);
     }
 
-    public LinkByIDResponseDTO getLinkByID(Long id) {
+    public LinkByIdResponseDTO getLinkById(Long id) {
         Link link = repository.findById(id).orElse(null);
         if (link == null) {
             return null;
         }
-        return toLinkByIDResponse(link.getOriginalURL());
+        return toLinkByIdResponse(link.getOriginalURL());
     }
 
     public Link getLinkByCode(String code) {
@@ -69,8 +69,8 @@ public class LinkService {
                 link.getExpires());
     }
 
-    private LinkByIDResponseDTO toLinkByIDResponse(String originalURL) {
-        return new LinkByIDResponseDTO(originalURL);
+    private LinkByIdResponseDTO toLinkByIdResponse(String originalURL) {
+        return new LinkByIdResponseDTO(originalURL);
     }
 
     private StatusByCodeResponseDTO toStatusByCodeResponse(Link link) {

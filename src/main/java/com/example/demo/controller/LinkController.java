@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.LinkPostDTO;
-import com.example.demo.dto.response.LinkByIDResponseDTO;
+import com.example.demo.dto.response.LinkByIdResponseDTO;
 import com.example.demo.dto.response.LinkSaveResponseDTO;
 import com.example.demo.dto.response.StatusByCodeResponseDTO;
 import com.example.demo.entities.Link;
@@ -27,8 +27,8 @@ public class LinkController {
     }
 
     @GetMapping(params = "id")
-    public ResponseEntity<LinkByIDResponseDTO> getLinkByID(@RequestParam("id") Long id) {
-        LinkByIDResponseDTO response = linkService.getLinkByID(id);
+    public ResponseEntity<LinkByIdResponseDTO> getLinkById(@RequestParam("id") Long id) {
+        LinkByIdResponseDTO response = linkService.getLinkById(id);
         if(response != null) {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }

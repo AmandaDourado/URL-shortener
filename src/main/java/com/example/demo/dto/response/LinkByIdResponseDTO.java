@@ -1,10 +1,10 @@
 package com.example.demo.dto.response;
 
-public class LinkByIDResponseDTO {
+public class LinkByIdResponseDTO {
 
     private String link;
 
-    public LinkByIDResponseDTO(String link) {
+    public LinkByIdResponseDTO(String link) {
         this.link = link;
     }
 
