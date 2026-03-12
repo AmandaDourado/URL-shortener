@@ -4,7 +4,6 @@ import com.example.demo.dto.LinkPostDTO;
 import com.example.demo.dto.response.LinkByIdResponseDTO;
 import com.example.demo.dto.response.LinkSaveResponseDTO;
 import com.example.demo.dto.response.StatusByCodeResponseDTO;
-import com.example.demo.entities.Link;
 import com.example.demo.services.LinkService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,40 +28,18 @@ public class LinkController {
     @GetMapping(params = "id")
     public ResponseEntity<LinkByIdResponseDTO> getLinkById(@RequestParam("id") Long id) {
         LinkByIdResponseDTO response = linkService.getLinkById(id);
-        if(response != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping(params = "code")
-    public ResponseEntity getLinkByCode(@RequestParam("code") String code) {
-        Link link = linkService.getLinkByCode(code);
-        if(link == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        boolean expired = linkService.isExpired(link.getExpires());
-        if(expired) {
-            return ResponseEntity.status(HttpStatus.GONE).build();
-        }
-
-        linkService.increaseClicks(code);
-
+    public ResponseEntity redirectToOriginalUrl(@RequestParam("code") String code) {
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(link.getOriginalURL()))
+                .location(URI.create(linkService.redirectToOriginalUrl(code)))
                 .build();
     }
 
     @GetMapping(value = "/{code}/status")
     public ResponseEntity<StatusByCodeResponseDTO> getStatusByCode(@PathVariable(value = "code") String code) {
-        StatusByCodeResponseDTO response = linkService.getStatusByCode(code);
-        if(response == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(linkService.getStatusByCode(code));
     }
 }

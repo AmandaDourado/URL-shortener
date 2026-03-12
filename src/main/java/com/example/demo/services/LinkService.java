@@ -5,6 +5,8 @@ import com.example.demo.dto.response.LinkByIdResponseDTO;
 import com.example.demo.dto.response.LinkSaveResponseDTO;
 import com.example.demo.dto.response.StatusByCodeResponseDTO;
 import com.example.demo.entities.Link;
+import com.example.demo.exception.ExpiredExceptionHandler;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.LinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,18 +29,33 @@ public class LinkService {
     public LinkByIdResponseDTO getLinkById(Long id) {
         Link link = repository.findById(id).orElse(null);
         if (link == null) {
-            return null;
+            throw new ResourceNotFoundException("Link not found with id: " + id);
         }
         return toLinkByIdResponse(link.getOriginalURL());
     }
 
-    public Link getLinkByCode(String code) {
-        return repository.findByCode(code);
+    public String redirectToOriginalUrl(String code) {
+        Link link = getLinkByCode(code);
+
+        if(isExpired(link.getExpires())) {
+            throw new ExpiredExceptionHandler("Link expired for code: " + code);
+        }
+
+        increaseClicks(code);
+
+        return link.getOriginalURL();
     }
 
     public StatusByCodeResponseDTO getStatusByCode(String code) {
+        return toStatusByCodeResponse(getLinkByCode(code));
+    }
+
+    private Link getLinkByCode(String code) {
         Link link = repository.findByCode(code);
-        return link != null ? toStatusByCodeResponse(link) : null;
+        if (link == null) {
+            throw new ResourceNotFoundException("Link not found with code: " + code);
+        }
+        return link;
     }
 
     private Link convertToEntity(LinkPostDTO linkDTO) {
@@ -77,7 +94,6 @@ public class LinkService {
         return new StatusByCodeResponseDTO(
                 link.getClicks(),
                 link.getExpires(),
-                link.getOriginalURL()
-        );
+                link.getOriginalURL());
     }
 }
