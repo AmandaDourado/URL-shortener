@@ -7,6 +7,7 @@ import com.example.demo.dto.response.StatusByCodeResponseDTO;
 import com.example.demo.entities.Link;
 import com.example.demo.exception.ExpiredExceptionHandler;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.mapper.LinkMapper;
 import com.example.demo.repository.LinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,11 @@ public class LinkService {
     private LinkRepository repository;
 
     public LinkSaveResponseDTO save(LinkPostDTO link) {
-        Link linkToSave = convertToEntity(link);
+        Link linkToSave = LinkMapper.INSTANCE.linkDTOLink(link);
+        linkToSave.setCode(generateCode());
+        linkToSave.setExpires(LocalDateTime.now().plusDays(2));
         Link saved = repository.save(linkToSave);
+
         return toLinkSaveResponse(saved);
     }
 
@@ -56,14 +60,6 @@ public class LinkService {
             throw new ResourceNotFoundException("Link not found with code: " + code);
         }
         return link;
-    }
-
-    private Link convertToEntity(LinkPostDTO linkDTO) {
-        return new Link.Builder()
-                .code(generateCode())
-                .originalURL(linkDTO.getOriginalURL())
-                .expires(LocalDateTime.now().plusDays(2))
-                .build();
     }
 
     private String generateCode() {
