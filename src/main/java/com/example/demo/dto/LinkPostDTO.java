@@ -12,7 +12,7 @@ public class LinkPostDTO {
     @NotBlank(message = "cryptoMessage is required")
     private String cryptoMessage;
     @NotBlank(message = "secretKey is required")
-    @Size(min = 16, message = "The minimum size is 16 characters")
+    @Size(min = 16, max = 32, message = "The size should be between 16 and 32 characters.")
     private String secretKey;
 
     public String getOriginalURL() {

@@ -17,4 +17,9 @@ public class GlobalExceptionHandler extends RuntimeException {
     public ResponseEntity<String> expiredHandlerException(ExpiredExceptionHandler ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.GONE);
     }
+
+    @ExceptionHandler(InvalidKeySizeException.class)
+    public ResponseEntity<String> invalidKeySizeException(InvalidKeySizeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
