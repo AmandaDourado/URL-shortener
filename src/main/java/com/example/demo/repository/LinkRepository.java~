@@ -20,3 +20,4 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     @Query("SELECT l FROM Link l WHERE l.secretKey = :secretKey")
     Link findBySecretKey(@Param("secretKey") String secretKey);
 }
+

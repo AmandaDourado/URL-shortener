@@ -1,7 +1,6 @@
 package com.example.demo.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
 
 public class LinkPostDTO {
@@ -12,7 +11,6 @@ public class LinkPostDTO {
     @NotBlank(message = "cryptoMessage is required")
     private String cryptoMessage;
     @NotBlank(message = "secretKey is required")
-    @Size(min = 16, max = 32, message = "The size should be between 16 and 32 characters.")
     private String secretKey;
 
     public String getOriginalURL() {

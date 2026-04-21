@@ -6,7 +6,7 @@ import com.example.demo.dto.response.LinkSaveResponseDTO;
 import com.example.demo.dto.response.StatusByCodeResponseDTO;
 import com.example.demo.entities.Link;
 import com.example.demo.exception.ExpiredExceptionHandler;
-import com.example.demo.exception.InvalidKeySizeException;
+import com.example.demo.exception.InvalidKeyException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.LinkMapper;
 import com.example.demo.repository.LinkRepository;
@@ -26,13 +26,18 @@ public class LinkService {
     private CryptographyService cryptographyService;
 
     public LinkSaveResponseDTO save(LinkPostDTO link) {
-        validateSecretKey(link.getSecretKey());
+        String secretKey = link.getSecretKey();
+        validateSecretKeySize(secretKey);
+
+        String hashSecretKey = cryptographyService.generateHash(secretKey);
+        validateSecretKeyHash(hashSecretKey);
 
         Link linkToSave = LinkMapper.INSTANCE.linkDTOLink(link);
-
         linkToSave.setCode(generateCode());
         linkToSave.setExpires(LocalDateTime.now().plusDays(2));
-        linkToSave.setCryptoMessage(cryptographyService.encodeMessage(link.getCryptoMessage(), link.getSecretKey()));
+        linkToSave.setSecretKey(hashSecretKey);
+        linkToSave.setCryptoMessage(cryptographyService.encodeMessage(link.getCryptoMessage(), secretKey));
+
         Link saved = repository.save(linkToSave);
 
         return toLinkSaveResponse(saved);
@@ -99,7 +104,7 @@ public class LinkService {
     }
 
     public String getMessage(String code, String key) {
-        validateSecretKey(key);
+        validateSecretKeySize(key);
 
         Link link = getLinkByCode(code);
         validateLink(link);
@@ -113,11 +118,17 @@ public class LinkService {
         }
     }
 
-    private void validateSecretKey(String secretKey) {
+    private void validateSecretKeySize(String secretKey) {
         int length = secretKey.length();
 
         if (length != 16 && length != 24 && length != 32) {
-            throw new InvalidKeySizeException("Invalid key size. The key must be 16, 24, or 32 character.");
+            throw new InvalidKeyException("Invalid key size. The key must be 16, 24, or 32 character.");
+        }
+    }
+
+    private void validateSecretKeyHash(String hashSecretKey) {
+        if (repository.findBySecretKey(hashSecretKey) != null) {
+            throw new InvalidKeyException("Invalid key size. The key must be unique.");
         }
     }
 

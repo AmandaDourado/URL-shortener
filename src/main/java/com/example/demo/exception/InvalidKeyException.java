@@ -1,8 +1,8 @@
 package com.example.demo.exception;
 
-public class InvalidKeySizeException extends RuntimeException {
+public class InvalidKeyException extends RuntimeException {
 
-    public InvalidKeySizeException(String message) {
+    public InvalidKeyException(String message) {
         super(message);
     }
 }

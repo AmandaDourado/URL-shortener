@@ -20,6 +20,7 @@ public class Link {
     private int clicks;
     private LocalDateTime expires;
     private String cryptoMessage;
+    private String secretKey;
 
     public Long getId() {
         return id;
@@ -68,4 +69,12 @@ public class Link {
     public void setCryptoMessage(String cryptoMessage) {
         this.cryptoMessage = cryptoMessage;
     }
+
+    public String getSecretKey() {
+        return secretKey;
     }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+}
