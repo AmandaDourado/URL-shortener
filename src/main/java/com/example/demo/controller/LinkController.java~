@@ -44,8 +44,8 @@ public class LinkController {
     }
 
     @GetMapping(value = "/message", params = {"key", "code"})
-    public ResponseEntity<String> getMessageByKey(@RequestParam("key") String key,
-                                                              @RequestParam("code") String code) {
+    public ResponseEntity<String> getMessageByKey(@RequestParam("key") String code,
+                                                              @RequestParam("code") String key) {
         return ResponseEntity.ok(linkService.getMessage(code,key));
     }
 }
