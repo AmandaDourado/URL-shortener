@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.Random;
 
 @Service
 public class LinkService {
@@ -25,6 +25,11 @@ public class LinkService {
 
     @Autowired
     private CryptographyService cryptographyService;
+
+    // variables to generate the code
+    private final String CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
+    private final int TOTAL_ATTEMPTS = 5;
+    private final int CODE_size = 8;
 
     public LinkSaveResponseDTO save(LinkPostDTO link) {
         String secretKey = link.getSecretKey();
@@ -76,8 +81,16 @@ public class LinkService {
     private String generateCode() {
         int attempts = 0;
 
-        while(attempts < 5) {
-            String generatedCode = UUID.randomUUID().toString().substring(0, 8).replace("-", "");
+        while(attempts < TOTAL_ATTEMPTS) {
+            Random random = new Random();
+            StringBuilder sb = new StringBuilder(CODE_size);
+
+            for (int i = 0; i < CODE_size; i++) {
+                int index = random.nextInt(CHARS.length());
+                sb.append(CHARS.charAt(index));
+            }
+
+            String generatedCode = sb.toString();
             Link link = repository.findByCode(generatedCode);
             attempts++;
 
