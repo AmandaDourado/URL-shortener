@@ -22,4 +22,9 @@ public class GlobalExceptionHandler extends RuntimeException {
     public ResponseEntity<String> invalidKeySizeException(InvalidKeyException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(GenerateCodeException.class)
+    public ResponseEntity<String> generateCodeException(GenerateCodeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

@@ -6,6 +6,7 @@ import com.example.demo.dto.response.LinkSaveResponseDTO;
 import com.example.demo.dto.response.StatusByCodeResponseDTO;
 import com.example.demo.entities.Link;
 import com.example.demo.exception.ExpiredExceptionHandler;
+import com.example.demo.exception.GenerateCodeException;
 import com.example.demo.exception.InvalidKeyException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.LinkMapper;
@@ -73,7 +74,19 @@ public class LinkService {
     }
 
     private String generateCode() {
-        return UUID.randomUUID().toString().substring(0, 8).replace("-", "");
+        int attempts = 0;
+
+        while(attempts < 5) {
+            String generatedCode = UUID.randomUUID().toString().substring(0, 8).replace("-", "");
+            Link link = repository.findByCode(generatedCode);
+            attempts++;
+
+            if(link == null) {
+                return generatedCode;
+            }
+        }
+
+       throw new GenerateCodeException("Unable to generate a code");
     }
 
     public void increaseClicks(String code) {
