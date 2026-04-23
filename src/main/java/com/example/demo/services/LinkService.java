@@ -70,6 +70,14 @@ public class LinkService {
         return toStatusByCodeResponse(getLinkByCode(code));
     }
 
+    public String getMessage(String code, String key) {
+        validateSecretKeySize(key);
+
+        Link link = getLinkByCode(code);
+        validateLink(link);
+        return cryptographyService.decodeMessage(link.getCryptoMessage(), key);
+    }
+
     private Link getLinkByCode(String code) {
         Link link = repository.findByCode(code);
         if (link == null) {
@@ -78,7 +86,7 @@ public class LinkService {
         return link;
     }
 
-    private String generateCode() {
+    public String generateCode() {
         int attempts = 0;
 
         while(attempts < TOTAL_ATTEMPTS) {
@@ -128,15 +136,6 @@ public class LinkService {
                 link.getExpires(),
                 link.getOriginalURL());
     }
-
-    public String getMessage(String code, String key) {
-        validateSecretKeySize(key);
-
-        Link link = getLinkByCode(code);
-        validateLink(link);
-        return cryptographyService.decodeMessage(link.getCryptoMessage(), key);
-    }
-
 
     private void validateLink(Link link) {
         if (isExpired(link.getExpires())) {
