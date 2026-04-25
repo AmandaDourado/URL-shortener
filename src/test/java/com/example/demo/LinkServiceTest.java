@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.OngoingStubbing;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -176,6 +177,13 @@ public class LinkServiceTest {
         assertThrows(InvalidKeyException.class, () -> {
             linkService.getMessage("abc12345", "1234");
         });
+    }
+
+    @Test
+    public void shouldDeleteExpiredLinks() {
+        doNothing().when(repository).deleteExpiredLinks(any(LocalDateTime.class));
+
+        linkService.deleteExpiredLinks();
     }
 
 }

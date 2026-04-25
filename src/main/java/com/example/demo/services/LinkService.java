@@ -86,6 +86,10 @@ public class LinkService {
         return link;
     }
 
+    public void deleteExpiredLinks() {
+        repository.deleteExpiredLinks(LocalDateTime.now());
+    }
+
     public String generateCode() {
         int attempts = 0;
 
