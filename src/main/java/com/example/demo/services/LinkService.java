@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -75,15 +76,16 @@ public class LinkService {
 
         Link link = getLinkByCode(code);
         validateLink(link);
+
         return cryptographyService.decodeMessage(link.getCryptoMessage(), key);
     }
 
     private Link getLinkByCode(String code) {
-        Link link = repository.findByCode(code);
-        if (link == null) {
+        Optional<Link> link = repository.findByCode(code);
+        if (link.isEmpty()) {
             throw new ResourceNotFoundException("Link not found with code: " + code);
         }
-        return link;
+        return link.get();
     }
 
     public void deleteExpiredLinks() {
@@ -103,12 +105,13 @@ public class LinkService {
             }
 
             String generatedCode = sb.toString();
-            Link link = repository.findByCode(generatedCode);
-            attempts++;
+            Optional<Link> linkByCode = repository.findByCode(generatedCode);
 
-            if(link == null) {
+            if(linkByCode.isEmpty()) {
                 return generatedCode;
             }
+
+            attempts++;
         }
 
        throw new GenerateCodeException("Unable to generate a code");
@@ -156,7 +159,7 @@ public class LinkService {
     }
 
     private void validateSecretKeyHash(String hashSecretKey) {
-        if (repository.findBySecretKey(hashSecretKey) != null) {
+        if (repository.findBySecretKey(hashSecretKey).isPresent()) {
             throw new InvalidKeyException("Invalid key size. The key must be unique.");
         }
     }

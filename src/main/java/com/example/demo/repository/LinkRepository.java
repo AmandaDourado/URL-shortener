@@ -8,11 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface LinkRepository extends JpaRepository<Link, Long> {
 
     @Query("SELECT l FROM Link l WHERE l.code = :code")
-    Link findByCode(@Param("code") String code);
+    Optional<Link> findByCode(@Param("code") String code);
 
     @Modifying
     @Transactional
@@ -20,7 +21,7 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     void updateClicksByCode(@Param("code") String code);
 
     @Query("SELECT l FROM Link l WHERE l.secretKey = :secretKey")
-    Link findBySecretKey(@Param("secretKey") String secretKey);
+    Optional<Link> findBySecretKey(@Param("secretKey") String secretKey);
 
     @Modifying
     @Transactional

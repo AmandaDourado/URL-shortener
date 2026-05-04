@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -41,7 +40,7 @@ public class LinkServiceTest {
 
     @Test
     public void shouldGenerateCode() {
-        when(repository.findByCode(anyString())).thenReturn(null);
+        when(repository.findByCode(anyString())).thenReturn(Optional.empty());
 
         String code = linkService.generateCode();
 
@@ -51,7 +50,7 @@ public class LinkServiceTest {
 
     @Test
     public void shouldExceptionWhenGenerateCode() {
-        when(repository.findByCode(anyString())).thenReturn(new Link());
+        when(repository.findByCode(anyString())).thenReturn(Optional.of(new Link()));
 
         assertThrows(GenerateCodeException.class, () -> {
             linkService.generateCode();
@@ -67,8 +66,8 @@ public class LinkServiceTest {
 
         when(cryptographyService.generateHash(anyString())).thenReturn("hashedKey");
         when(cryptographyService.encodeMessage(anyString(), anyString())).thenReturn("encodedMessage");
-        when(repository.findByCode(anyString())).thenReturn(null);
-        when(repository.findBySecretKey(anyString())).thenReturn(null);
+        when(repository.findByCode(anyString())).thenReturn(Optional.empty());
+        when(repository.findBySecretKey(anyString())).thenReturn(Optional.empty());
         
         Link savedLink = new Link();
         savedLink.setId(1L);
@@ -120,7 +119,7 @@ public class LinkServiceTest {
         Link link = new Link();
         link.setOriginalURL("https://example.com");
         link.setExpires(LocalDateTime.now().plusDays(2));
-        when(repository.findByCode(anyString())).thenReturn(link);
+        when(repository.findByCode(anyString())).thenReturn(Optional.of(link));
         doNothing().when(repository).updateClicksByCode(anyString());
 
         String result = linkService.redirectToOriginalUrl("abc12345");
@@ -133,7 +132,7 @@ public class LinkServiceTest {
     public void shouldExceptionWhenRedirectToOriginalUrl() {
         Link link = new Link();
         link.setExpires(LocalDateTime.now().minusDays(2));
-        when(repository.findByCode(anyString())).thenReturn(link);
+        when(repository.findByCode(anyString())).thenReturn(Optional.of(link));
 
         assertThrows(ExpiredExceptionHandler.class, () -> {
             linkService.redirectToOriginalUrl("123");
@@ -142,7 +141,7 @@ public class LinkServiceTest {
     
     @Test
     public void shouldGetStatusByCode() {
-        when(repository.findByCode(anyString())).thenReturn(new Link());
+        when(repository.findByCode(anyString())).thenReturn(Optional.of(new Link()));
 
         StatusByCodeResponseDTO result = linkService.getStatusByCode("abc12345");
 
@@ -151,7 +150,7 @@ public class LinkServiceTest {
 
     @Test
     public void shouldExceptionWhenGetStatusByCode() {
-        when(repository.findByCode(anyString())).thenReturn(null);
+        when(repository.findByCode(anyString())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
             linkService.getStatusByCode("123");
@@ -163,7 +162,7 @@ public class LinkServiceTest {
         Link link = new Link();
         link.setCryptoMessage("encodedMessage");
         link.setExpires(LocalDateTime.now().plusDays(2));
-        when(repository.findByCode(anyString())).thenReturn(link);
+        when(repository.findByCode(anyString())).thenReturn(Optional.of(link));
         when(cryptographyService.decodeMessage(anyString(), anyString())).thenReturn("decoded message");
 
         String result = linkService.getMessage("abc12345", "1234567890123456");
