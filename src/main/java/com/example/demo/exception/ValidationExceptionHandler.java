@@ -1,6 +1,7 @@
 package com.example.demo.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,9 +18,12 @@ public class ValidationExceptionHandler {
         
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((org.springframework.validation.FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            if(error instanceof FieldError) {
+                FieldError fieldError = (FieldError) error;
+                String fieldName = fieldError.getField();
+                String errorMessage = fieldError.getDefaultMessage();
+                errors.put(fieldName, errorMessage);
+            }
         });
         
         return ResponseEntity.badRequest().body(errors);
