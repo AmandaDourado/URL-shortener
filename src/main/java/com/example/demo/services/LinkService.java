@@ -12,6 +12,7 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.LinkMapper;
 import com.example.demo.repository.LinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -50,7 +51,10 @@ public class LinkService {
         return toLinkSaveResponse(saved);
     }
 
+    @Cacheable(value = "links", key = "#id")
     public LinkByIdResponseDTO getLinkById(Long id) {
+        System.out.println("======> Searching the database ID: " + id + " <======");
+
         Link link = repository.findById(id).orElse(null);
         if (link == null) {
             throw new ResourceNotFoundException("Link not found with id: " + id);

@@ -1,6 +1,8 @@
 package com.example.demo.dto.response;
 
-public class LinkByIdResponseDTO {
+import java.io.Serializable;
+
+public class LinkByIdResponseDTO implements Serializable {
 
     private String link;
 

@@ -13,6 +13,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: url-shortener-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: always
 
   app:
     build: .
@@ -20,10 +36,20 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       bd_url: ${BD_URL}
       bd_username: ${BD_USERNAME}
       bd_password: ${BD_PASSWORD}
       bd_driver: ${BD_DRIVER}
+
+      SPRING_CACHE_TYPE: redis
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     ports:
       - "8080:8080"
+    restart: always
+
+volumes:
+  redis_data:

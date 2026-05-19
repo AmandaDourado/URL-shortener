@@ -15,7 +15,7 @@ public class ScheduledLinksExpired {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledLinksExpired.class);
 
-    @Scheduled(fixedRate = 120000)
+    @Scheduled(fixedRate = 3600000)
     public void deleteExpiredLinks() {
         LOGGER.info("Cleaning expired links");
 
