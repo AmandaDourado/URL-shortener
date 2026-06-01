@@ -34,7 +34,7 @@ public class LinkService {
     private final int CODE_size = 8;
 
     @Autowired
-    private LinkQueryService linkQueryService;
+    private LinkCacheService linkCacheService;
 
     public LinkSaveResponseDTO save(LinkPostDTO link) {
         String secretKey = link.getSecretKey();
@@ -58,7 +58,7 @@ public class LinkService {
     public LinkByIdResponseDTO getLinkById(Long id) {
         System.out.println("======> Searching the database ID: " + id + " <======");
 
-        Link link = repository.findById(id).orElse(null);
+        Link link = linkCacheService.getLinkById(id).orElse(null);
         if (link == null) {
             throw new ResourceNotFoundException("Link not found with id: " + id);
         }
@@ -88,7 +88,7 @@ public class LinkService {
     }
 
     public Link getLinkByCode(String code) {
-        return linkQueryService.getLinkByCode(code);
+        return linkCacheService.getLinkByCode(code);
     }
 
     public void deleteExpiredLinks() {
@@ -162,7 +162,7 @@ public class LinkService {
     }
 
     private void validateSecretKeyHash(String hashSecretKey) {
-        if (repository.findBySecretKey(hashSecretKey).isPresent()) {
+        if (linkCacheService.linkBySecretKey(hashSecretKey).isPresent()) {
             throw new InvalidKeyException("Invalid key size. The key must be unique.");
         }
     }
