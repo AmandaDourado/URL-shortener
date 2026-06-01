@@ -33,6 +33,9 @@ public class LinkService {
     private final int TOTAL_ATTEMPTS = 5;
     private final int CODE_size = 8;
 
+    @Autowired
+    private LinkQueryService linkQueryService;
+
     public LinkSaveResponseDTO save(LinkPostDTO link) {
         String secretKey = link.getSecretKey();
         validateSecretKeySize(secretKey);
@@ -51,7 +54,7 @@ public class LinkService {
         return toLinkSaveResponse(saved);
     }
 
-    @Cacheable(value = "links", key = "#id")
+    @Cacheable(value = "linksById", key = "#id")
     public LinkByIdResponseDTO getLinkById(Long id) {
         System.out.println("======> Searching the database ID: " + id + " <======");
 
@@ -84,12 +87,8 @@ public class LinkService {
         return cryptographyService.decodeMessage(link.getCryptoMessage(), key);
     }
 
-    private Link getLinkByCode(String code) {
-        Optional<Link> link = repository.findByCode(code);
-        if (link.isEmpty()) {
-            throw new ResourceNotFoundException("Link not found with code: " + code);
-        }
-        return link.get();
+    public Link getLinkByCode(String code) {
+        return linkQueryService.getLinkByCode(code);
     }
 
     public void deleteExpiredLinks() {

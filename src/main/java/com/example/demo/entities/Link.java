@@ -6,11 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "links")
-public class Link {
+public class Link implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
